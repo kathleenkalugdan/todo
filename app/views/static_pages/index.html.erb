@@ -15,28 +15,22 @@
 
 <script>
   $(function() {
-    $.get("/tasks").success( function( data ) {
-      var htmlString = "";
-
-      $.each(data, function(index, task) {
+      function taskHtml(task) {
         var checkedStatus = task.done ? "checked" : "";
         var liElement = '<li><div class="view"><input class="toggle" type="checkbox"' +
         " data-id='" + task.id + "'" +
         checkedStatus + 
         '><label>' +
         task.title +
-        '</lable></div></li>'
-        htmlString += liElement;
-        });
-      var ulTodos = $('.todo-list');
-      ulTodos.html(htmlString);
+        '</lable></div></li>';
 
-      $('.toggle').change(function(e) {
+        return liElement;
+      }
+
+      function toggleTask(e){
         var itemId = $(e.target).data("id");
-        console.log(itemId);
 
         var doneValue = Boolean($(e.target).is(':checked'));
-        console.log("done:", doneValue);
 
         $.post("/tasks/" + itemId, {
           _method: "PUT",
@@ -46,7 +40,22 @@
           }
         });
 
+      }
+
+      $.get("/tasks").success( function( data ) {
+      var htmlString = "";
+
+      $.each(data, function(index, task) {
+
+
+
+        htmlString += taskHtml(task);
       });
+
+      var ulTodos = $('.todo-list');
+      ulTodos.html(htmlString);
+
+      $('.toggle').change(toggleTask);
 
      });
   });
